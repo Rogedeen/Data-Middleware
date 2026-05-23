@@ -144,22 +144,8 @@ export class TCPConnectionHandler {
 
       // 2. CYBERSEC (CSV Formatı)
       const csvPath = path.join(this.outputDir, 'cybersec.csv');
-      
-      // Log Rotation (Maksimum 5 MB Sınırı)
-      const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
-      if (fs.existsSync(csvPath)) {
-        try {
-          const stats = fs.statSync(csvPath);
-          if (stats.size >= MAX_FILE_SIZE) {
-            console.log(`[LogRotation] cybersec.csv reached 5MB. Rotating log files...`);
-            this.rotateLogs(csvPath);
-          }
-        } catch (err: any) {
-          console.error(`[LogRotation] Error checking file size: ${err.message}`);
-        }
-      }
-
       const fileExists = fs.existsSync(csvPath);
+      
       const secFormatter = this.formatterFactory.createFormatter(UserRole.CYBERSEC);
       const secOutput = secFormatter.format(logs);
 
@@ -178,43 +164,6 @@ export class TCPConnectionHandler {
       console.log(`[Middleware] Exported ${logs.length} processed logs to output files.`);
     } catch (err: any) {
       console.error(`[Middleware] Failed to export processed logs: ${err.message}`);
-    }
-  }
-
-  /**
-   * Log dosyalarını döndürür (cybersec.csv -> cybersec.1.csv -> cybersec.2.csv -> cybersec.3.csv)
-   */
-  private rotateLogs(csvPath: string): void {
-    const maxBackups = 3;
-    const dir = path.dirname(csvPath);
-    const ext = path.extname(csvPath);
-    const base = path.basename(csvPath, ext);
-
-    // En eski yedeği sil (örn: cybersec.3.csv varsa silinir)
-    const oldestBackup = path.join(dir, `${base}.${maxBackups}${ext}`);
-    if (fs.existsSync(oldestBackup)) {
-      try {
-        fs.unlinkSync(oldestBackup);
-      } catch (e) {}
-    }
-
-    // Mevcut yedekleri kaydır (cybersec.2.csv -> cybersec.3.csv vb.)
-    for (let i = maxBackups - 1; i >= 1; i--) {
-      const currentBackup = path.join(dir, `${base}.${i}${ext}`);
-      const nextBackup = path.join(dir, `${base}.${i + 1}${ext}`);
-      if (fs.existsSync(currentBackup)) {
-        try {
-          fs.renameSync(currentBackup, nextBackup);
-        } catch (e) {}
-      }
-    }
-
-    // Ana dosyayı ilk yedek yap (cybersec.csv -> cybersec.1.csv)
-    const firstBackup = path.join(dir, `${base}.1${ext}`);
-    if (fs.existsSync(csvPath)) {
-      try {
-        fs.renameSync(csvPath, firstBackup);
-      } catch (e) {}
     }
   }
 
