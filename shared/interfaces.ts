@@ -28,18 +28,18 @@ export interface ITCPChunkAdapter {
  * Log işleme adımlarını (Filtreleme -> Maskeleme -> Zenginleştirme)
  * birbirine bağlayan ve sırayla çalıştıran zincir halkası arayüzü.
  */
-export interface ILogProcessor {
+export interface ILogProcessor<TIn = any, TOut = any> {
   /**
    * Zincirdeki bir sonraki halkayı belirler.
    * @param next Bir sonraki işlemci
    */
-  setNext(next: ILogProcessor): ILogProcessor;
+  setNext(next: ILogProcessor<any, any>): ILogProcessor<any, any>;
 
   /**
    * Log verilerini işler ve varsa bir sonraki halkaya iletir.
    * @param logs İşlenecek log dizisi
    */
-  process(logs: any[]): Promise<any[]>;
+  process(logs: TIn[]): Promise<TOut[]>;
 }
 
 /**
