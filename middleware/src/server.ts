@@ -51,7 +51,7 @@ export class TCPConnectionHandler {
     this.adapter = new TCPChunkAdapter();
     
     // Kök dizinde veya konteynerde output klasörü belirle
-    this.outputDir = path.join(process.cwd(), 'output');
+    this.outputDir = process.env.OUTPUT_DIR || path.join(process.cwd(), 'output');
     if (!fs.existsSync(this.outputDir)) {
       fs.mkdirSync(this.outputDir, { recursive: true });
     }

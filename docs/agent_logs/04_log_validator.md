@@ -44,3 +44,12 @@
 - **Rapor Güncellemesi:**
   - `C:\Users\iyunu\.gemini\antigravity\brain\f0801f50-e2f2-4990-94fe-9e40c0e68d1b\validation_report.md` dosyası güncellenerek tasarımların nihai olarak **APPROVED (100% UYUMLU)** olduğu belirtildi.
   - Son durum ana ajana raporlandı.
+
+## [2026-05-23T22:05:00+03:00] - Canlı Sistem, Maskeleme ve Performans Entegrasyon Testlerinin Doğrulanması
+- Canlı Docker konteynerlerinin durumu `docker compose ps` komutuyla sorgulandı, `ceng302-middleware` ve `ceng302-producer` servislerinin aktif çalıştığı (Up) teyit edildi.
+- `output/` dizininde üretilen canlı çıktılar (`cybersec.csv`, `system_admin.html`, `web_dev.json`) incelendi:
+  - TC Kimlik No maskelemesinin (`*********46`), Kredi Kartı maskelemesinin (`****-****-****-1786`), E-posta maskelemesinin (`S**************@hotmail.com`) ve isim maskelemesinin (`L******* M*******`) %100 sızıntısız ve kurallara tam uyumlu şekilde çalıştığı doğrulandı.
+  - HTML çıktısındaki renk kodlu kritik seviye tabloları ve CSV çıktısındaki karakter kaçış (escaping) işlemleri incelendi, doğru çalıştığı görüldü.
+- `scratch/run_validation_tests.ts` entegrasyon test dosyası `npx ts-node` aracılığıyla çalıştırıldı:
+  - Filtreleme (INFO ve WARNING logların zincirin başında düşürülmesi), TCKN Maskeleme, Kredi Kartı Maskeleme (boşluklu, tireli ve düz formatlar), E-posta Maskeleme, LogBuilder zenginleştirme nitelikleri ve FormatterFactory strateji eşleştirmeleri dahil olmak üzere 17 assertion'ın tamamı başarıyla **PASSED** oldu.
+- Nihai onay durumu: **APPROVED (100% UYUMLU)**. Raporlar güncellendi.

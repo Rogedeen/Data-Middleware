@@ -9,6 +9,7 @@ services:
     environment:
       - PORT=3000
       - NODE_ENV=production
+      - OUTPUT_DIR=/app/output
     volumes:
       - ./output:/app/output
     networks:
@@ -41,8 +42,8 @@ services:
       echo 'Starting sidecar log-rotator...';
       while true; do
         if [ -f /output/cybersec.csv ]; then
-          size=\$(stat -c%s /output/cybersec.csv 2>/dev/null || echo 0);
-          if [ \$size -ge 5242880 ]; then
+          size=$$(stat -c%s /output/cybersec.csv 2>/dev/null || echo 0);
+          if [ $$size -ge 5242880 ]; then
             echo 'cybersec.csv reached 5MB. Attempting log rotation...';
             rm -f /output/cybersec.3.csv;
             mv /output/cybersec.2.csv /output/cybersec.3.csv 2>/dev/null;
