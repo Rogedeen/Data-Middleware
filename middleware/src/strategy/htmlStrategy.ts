@@ -24,6 +24,7 @@ export class HtmlStrategy implements IFormatStrategy {
     .badge { display: inline-block; padding: 4px 8px; font-size: 11px; font-weight: bold; border-radius: 9999px; text-transform: uppercase; }
     .badge-critical { background-color: #ef4444; color: white; }
     .badge-error { background-color: #f59e0b; color: white; }
+    .badge-normal { background-color: #10b981; color: white; }
     .critical-row { border-left: 5px solid #ef4444; background-color: #fef2f2 !important; }
   </style>
 </head>
@@ -35,13 +36,9 @@ export class HtmlStrategy implements IFormatStrategy {
       <tr>
         <th>Timestamp</th>
         <th>Level</th>
-        <th>User FullName</th>
-        <th>TC No</th>
-        <th>Credit Card</th>
-        <th>Email</th>
         <th>Message</th>
-        <th>Sender</th>
-        <th>Transaction No</th>
+        <th>Sender ID</th>
+        <th>Criticality</th>
       </tr>
     </thead>
     <tbody>`;
@@ -49,18 +46,17 @@ export class HtmlStrategy implements IFormatStrategy {
     for (const log of logs) {
       const badge = log.level === 'CRITICAL' ? 'badge-critical' : 'badge-error';
       const rowClass = log.isCritical ? 'class="critical-row"' : '';
+      const criticalityBadge = log.isCritical 
+        ? '<span class="badge badge-critical">CRITICAL</span>' 
+        : '<span class="badge badge-normal">NORMAL</span>';
       
       html += `
       <tr ${rowClass}>
         <td>${log.timestamp}</td>
         <td><span class="badge ${badge}">${log.level}</span></td>
-        <td>${log.fullName}</td>
-        <td><code>${log.tcNo}</code></td>
-        <td><code>${log.creditCard}</code></td>
-        <td>${log.email}</td>
         <td>${log.message}</td>
         <td>${log.senderId || 'N/A'}</td>
-        <td><code>${log.transactionNo || 'N/A'}</code></td>
+        <td>${criticalityBadge}</td>
       </tr>`;
     }
 
