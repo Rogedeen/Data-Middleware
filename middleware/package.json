@@ -1,0 +1,17 @@
+{
+  "name": "ceng302-middleware",
+  "version": "1.0.0",
+  "description": "Log processing middleware",
+  "main": "dist/middleware/src/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "ts-node src/index.ts",
+    "start:prod": "node dist/middleware/src/index.js"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^20.11.24",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  }
+}

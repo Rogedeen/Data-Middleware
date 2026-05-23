@@ -1,0 +1,12 @@
+{
+  "name": "ceng302-data-middleware-root",
+  "version": "1.0.0",
+  "description": "CENG302 - Data Middleware Project Root",
+  "private": true,
+  "scripts": {
+    "init-project": "npm install --prefix producer && npm install --prefix middleware",
+    "start:producer": "npm start --prefix producer",
+    "start:middleware": "npm start --prefix middleware",
+    "build:all": "npm run build --prefix producer && npm run build --prefix middleware"
+  }
+}

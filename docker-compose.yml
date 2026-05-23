@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  middleware:
+    build:
+      context: .
+      dockerfile: middleware/Dockerfile
+    container_name: ceng302-middleware
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - NODE_ENV=production
+    networks:
+      - ceng302-net
+
+  producer:
+    build:
+      context: .
+      dockerfile: producer/Dockerfile
+    container_name: ceng302-producer
+    environment:
+      - MIDDLEWARE_HOST=middleware
+      - MIDDLEWARE_PORT=3000
+      - CHUNK_SIZE=500
+      - GENERATION_INTERVAL_MS=100
+      - NODE_ENV=production
+    depends_on:
+      - middleware
+    networks:
+      - ceng302-net
+
+networks:
+  ceng302-net:
+    driver: bridge

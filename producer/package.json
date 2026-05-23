@@ -1,0 +1,19 @@
+{
+  "name": "ceng302-producer",
+  "version": "1.0.0",
+  "description": "Bourse Log Data Producer Simulator",
+  "main": "dist/producer/src/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "ts-node src/index.ts",
+    "start:prod": "node dist/producer/src/index.js"
+  },
+  "dependencies": {
+    "@faker-js/faker": "^8.4.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.24",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  }
+}
