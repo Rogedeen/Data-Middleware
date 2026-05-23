@@ -18,5 +18,23 @@
 7. **Mimari Tasarım Belgesi (`docs/architecture_design.md`):** Dizin yapısı ağacını, veri akışını gösteren Mermaid dizilim şemasını ve 5 tasarım kalıbının projede nasıl konumlandırıldığını anlatan mimari tasarım belgesi hazırlandı.
 8. **Git Güncellemesi:** Yapılan tüm altyapı ve mimari tasarım değişiklikleri `main` branch'ine commitlendi.
 
-### Sonraki Adım:
-- Tasarlanan mimarinin `rules.md` anayasasına uygunluğunun denetlenmesi için **Validator Agent** sahaya sürülecektir.
+---
+
+## [2026-05-23T21:26:00+03:00] - Sprint 2 Detaylı Tasarımların Tamamlanması
+1. **Producer ve Middleware Ajanlarının Başlatılması:** Sub-agent'lar detaylı modül tasarımlarını yapması için görevlendirildi.
+2. **Bileşen Tasarımlarının Tamamlanması:**
+   - Producer Agent: `docs/producer_design.md` dosyasını hazırladı. Veri şeması, NDJSON protokolü ve socket.write backpressure mantığı detaylandırıldı.
+   - Middleware Agent: `docs/middleware_design.md` dosyasını hazırladı. Watermark Queue-based backpressure, CoR pipeline (`Filter`, `Mask`, `Enrich`) sınıf yapıları ve OCP uyumlu registry-based Factory tasarımları detaylandırıldı.
+3. **Validator Denetimi ve Onayı:** Validator Agent, iki yeni tasarım belgesini denetleyerek kurallarla ve performans hedefleriyle tam uyumlu buldu ve nihai tasarım onayını (`APPROVED`) verdi.
+4. **Git ve State Güncellemesi:** Tasarım dökümanları ve ajan günlükleri commitlendi, `STATE.md` güncellendi.
+
+---
+
+## [2026-05-23T21:35:00+03:00] - Sprint 3 Kodlama, Entegrasyon ve Testlerin Tamamlanması
+1. **Kod Geliştirme (Option A):** Tasarımlara birebir sadık kalınarak kaynak kodları TypeScript ile yazıldı:
+   - `producer/src/generator.ts`, `producer/src/client.ts`, `producer/src/index.ts` dosyaları kodlandı.
+   - `middleware/src/adapter/chunkAdapter.ts`, `middleware/src/pipeline/` (`logProcessor.ts`, `filterProcessor.ts`, `maskProcessor.ts`, `enrichProcessor.ts`), `middleware/src/builder/logBuilder.ts`, `middleware/src/strategy/` (`htmlStrategy.ts`, `csvStrategy.ts`, `jsonStrategy.ts`), `middleware/src/factory/formatterFactory.ts`, `middleware/src/server.ts`, `middleware/src/index.ts` dosyaları kodlandı.
+2. **Kapsayıcı Entegrasyonu:** `docker-compose.yml` local çıktı dizinini senkronize edecek şekilde güncellendi. `docker compose up --build -d` ile sistem Docker üzerinde başarıyla ayağa kaldırıldı.
+3. **Otomatik Entegrasyon Testleri:** `scratch/run_validation_tests.ts` dosyası localde çalıştırıldı. Filtreleme, maskeleme kuralları, Builder ve Factory-Strategy şablonları dahil 16 test başarıyla geçti.
+4. **Nihai Validator Auditi:** Validator Agent, canlı sistem çıktıları (`output/` klasörü) üzerinde veri sızıntı kontrolü yaptı. TC Kimlik, Kredi Kartı ve E-posta alanlarının %100 güvenli şekilde maskelendiğini doğrulayarak projeye **NİHAİ ONAY (APPROVED - 100% UYUMLU)** verdi.
+5. **Git ve State Kapanışı:** Son kaynak kodları, test dökümanları ve `STATE.md` dosyası Git'e kaydedildi. Proje başarıyla kapatıldı.
