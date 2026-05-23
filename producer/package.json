@@ -9,7 +9,8 @@
     "start:prod": "node dist/producer/src/index.js"
   },
   "dependencies": {
-    "@faker-js/faker": "^8.4.1"
+    "@faker-js/faker": "^8.4.1",
+    "ceng302-data-middleware-root": "file:.."
   },
   "devDependencies": {
     "@types/node": "^20.11.24",

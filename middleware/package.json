@@ -8,7 +8,9 @@
     "start": "ts-node src/index.ts",
     "start:prod": "node dist/middleware/src/index.js"
   },
-  "dependencies": {},
+  "dependencies": {
+    "ceng302-data-middleware-root": "file:.."
+  },
   "devDependencies": {
     "@types/node": "^20.11.24",
     "ts-node": "^10.9.2",

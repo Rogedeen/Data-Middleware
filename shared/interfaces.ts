@@ -4,7 +4,6 @@ import {
   IRawLogData, 
   IProcessedLogData, 
   UserRole, 
-  IFormatStrategy as IFormatStrategyType, // avoid naming circular references if any
   OutputFormat,
   LogLevel
 } from './types';
