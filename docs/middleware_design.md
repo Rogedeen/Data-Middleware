@@ -575,8 +575,7 @@ export class CsvStrategy implements IFormatStrategy {
   }
 
   public format(logs: IProcessedLogData[]): string {
-    const headers = ['Timestamp', 'Level', 'FullName', 'TCNo', 'CreditCard', 'Email', 'Message', 'Details', 'SenderId', 'TransactionNo', 'IsCritical'];
-    const csvRows = [headers.join(',')];
+    const csvRows: string[] = [];
 
     for (const log of logs) {
       const row = [
@@ -587,12 +586,11 @@ export class CsvStrategy implements IFormatStrategy {
         log.creditCard,
         log.email,
         this.escapeCsv(log.message),
-        this.escapeCsv(log.details),
         log.senderId || '',
         log.transactionNo || '',
-        log.isCritical ? 'true' : 'false',
+        this.escapeCsv(log.details),
       ];
-      csvRows.push(row.join(','));
+      csvRows.push(row.join(';'));
     }
 
     return csvRows.join('\n');

@@ -187,7 +187,7 @@ export class TCPConnectionHandler {
       const secOutput = secFormatter.format(logs);
 
       if (!fileExists) {
-        const headers = ['Timestamp', 'Level', 'FullName', 'TCNo', 'CreditCard', 'Email', 'Message', 'SenderId', 'TransactionNo', 'IsCritical'].join(';');
+        const headers = ['Timestamp', 'Level', 'FullName', 'TCNo', 'CreditCard', 'Email', 'Message', 'SenderId', 'TransactionNo', 'Details'].join(';');
         fs.writeFileSync(csvPath, headers + '\n' + secOutput + '\n', 'utf-8');
       } else {
         fs.appendFileSync(csvPath, secOutput + '\n', 'utf-8');

@@ -43,7 +43,7 @@ export class HtmlStrategy implements IFormatStrategy {
         <th>Message</th>
         <th>Sender ID</th>
         <th>Transaction No</th>
-        <th>Criticality</th>
+        <th>Details</th>
       </tr>
     </thead>
     <tbody>`;
@@ -51,9 +51,6 @@ export class HtmlStrategy implements IFormatStrategy {
     for (const log of logs) {
       const badge = log.level === 'CRITICAL' ? 'badge-critical' : 'badge-error';
       const rowClass = log.isCritical ? 'class="critical-row"' : '';
-      const criticalityBadge = log.isCritical 
-        ? '<span class="badge badge-critical">CRITICAL</span>' 
-        : '<span class="badge badge-normal">NORMAL</span>';
       
       html += `
       <tr ${rowClass}>
@@ -66,7 +63,7 @@ export class HtmlStrategy implements IFormatStrategy {
         <td>${log.message}</td>
         <td>${log.senderId || 'N/A'}</td>
         <td><code>${log.transactionNo || 'N/A'}</code></td>
-        <td>${criticalityBadge}</td>
+        <td><code style="font-size: 11px; white-space: pre-wrap; word-break: break-all;">${log.details}</code></td>
       </tr>`;
     }
 

@@ -20,7 +20,7 @@ export class CsvStrategy implements IFormatStrategy {
         this.escapeCsv(log.message),
         log.senderId || '',
         log.transactionNo || '',
-        log.isCritical ? 'true' : 'false',
+        this.escapeCsv(log.details),
       ];
       csvRows.push(row.join(';'));
     }
