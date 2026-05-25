@@ -36,7 +36,7 @@ Sistemde logların önemi (seviyesi) ve hataların sebepleri, borsa işlemlerini
 
 ## 🎨 2. Kullanılan Tasarım Kalıpları (Design Patterns)
 
-Projede, anayasa kurallarına ve gereksinimlere uygun olarak **5 adet tasarım kalıbı** kullanılmıştır:
+Projede, anayasa kurallarına ve gereksinimlere uygun olarak **4 adet tasarım kalıbı** kullanılmıştır:
 
 ### 1. Adapter Pattern (Hedef: TCP Akışını Ayrıştırma)
 * **Kullanılan Sınıf:** `TCPChunkAdapter`
@@ -52,12 +52,7 @@ Projede, anayasa kurallarına ve gereksinimlere uygun olarak **5 adet tasarım k
   - `MaskProcessor` hassas kişisel verileri (TCKN, Kredi Kartı, E-posta, İsim) KVKK uyumlu algoritmalarla maskeler.
   - `EnrichProcessor` logları mikroservisler için zenginleştirir.
 
-### 3. Builder Pattern (Hedef: Modüler Veri İnşası ve Zenginleştirme)
-* **Kullanılan Sınıf:** `LogBuilder`
-* **Amaç:** `IRawLogData` nesnesinden zenginleştirilmiş `IProcessedLogData` nesnesini oluştururken, karmaşık zenginleştirme mantığını modülerleştirmek.
-* **Uygulanışı:** `LogBuilder` sınıfı; `setSenderId`, `setTransactionNo` (UUID üretimiyle) ve `build` gibi zincirlenebilir metotlar sunar. `build()` metodu hem `reset()` çağrılıp çağrılmadığını hem de zorunlu alanların dolu olduğunu kontrol ederek güvenli nesne inşası garanti eder.
-
-### 4. Strategy Pattern (Hedef: Rol Bazlı Çıktı Biçimlendirme)
+### 3. Strategy Pattern (Hedef: Rol Bazlı Çıktı Biçimlendirme)
 * **Kullanılan Sınıflar:** `IFormatStrategy`, `HtmlStrategy`, `CsvStrategy`, `JsonStrategy`
 * **Amaç:** Kullanıcı rollerine göre (System Admin, CyberSec, Web Dev) çıktı formatlarını dinamik olarak belirlemek ve dosya yazma format algoritmalarını birbirlerinden izole etmek.
 * **Uygulanışı:**
@@ -66,7 +61,7 @@ Projede, anayasa kurallarına ve gereksinimlere uygun olarak **5 adet tasarım k
   - `JsonStrategy` (WEB_DEV için): Geliştiricilerin debug yapabileceği, tüm hata traceback detaylarını barındıran temiz JSON çıktısı hazırlar.
   - Her strateji `getFormatType()` metodu aracılığıyla format tipini dışa aktarır; bu bilgi `server.ts`'teki dışa aktarım log mesajlarında aktif olarak kullanılır.
 
-### 5. Factory Method Pattern (Hedef: Açık-Kapalı İlkesine Uygun Nesne Üretimi)
+### 4. Factory Method Pattern (Hedef: Açık-Kapalı İlkesine Uygun Nesne Üretimi)
 * **Kullanılan Sınıflar:** `FormatterFactory`
 * **Amaç:** Strateji nesnelerini, istemci sınıfların doğrudan `new` anahtar kelimesiyle bağımlı olmasına gerek kalmadan üretmek.
 * **Uygulanışı:** `FormatterFactory` sınıfı, Open/Closed prensibini ihlal etmemek adına `switch-case` yerine dinamik bir **Registry** (Kayıt Haritası) kullanır. Başlangıçta rollere karşılık gelen yapıcı fonksiyonlar (`new HtmlStrategy()`, `new CsvStrategy()`, `new JsonStrategy()`) bir `Map` nesnesine kaydedilir. `createFormatter(role)` metodu bu haritadan ilgili stratejiyi bularak döner. Yeni bir rol eklendiğinde fabrika kodunu değiştirmek gerekmez, sadece yeni stratejiyi tescil etmek (register) yeterlidir.
