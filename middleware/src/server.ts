@@ -45,6 +45,13 @@ export class TCPConnectionHandler {
   private formatterFactory = initializeFormatterFactory();
   private outputDir: string;
 
+  // Performans takibi için değişkenler
+  private totalProcessed: number = 0;
+  private processedInWindow: number = 0;
+  private lastMetricTime: number = Date.now();
+  private totalLatencyMs: number = 0;
+  private batchesInWindow: number = 0;
+
   constructor(socket: net.Socket, pipeline: ILogProcessor<IRawLogData, IProcessedLogData>) {
     this.socket = socket;
     this.pipeline = pipeline;
@@ -107,14 +114,44 @@ export class TCPConnectionHandler {
         // Belirlenen batch boyutunda logu kuyruktan çek
         const batch = this.queue.slice(0, this.BATCH_SIZE);
         
+        // Zaman ölçümünü başlat
+        const startHr = process.hrtime();
+        
         // CoR Zincirini tetikle (Filtrele -> Maskele -> Zenginleştir)
         const processedBatch = await this.pipeline.process(batch);
+        
+        // Zaman ölçümünü bitir
+        const diffHr = process.hrtime(startHr);
+        const latencyMs = (diffHr[0] * 1e9 + diffHr[1]) / 1e6; // ms cinsinden
         
         // İşlenmiş verileri rollere göre formatla ve diske yaz
         this.exportProcessedLogs(processedBatch);
         
         // İşlenenleri kuyruktan temizle
         this.queue.splice(0, batch.length);
+
+        // Performans metriklerini güncelle
+        this.totalProcessed += batch.length;
+        this.processedInWindow += batch.length;
+        this.totalLatencyMs += latencyMs;
+        this.batchesInWindow += 1;
+
+        // Her 5 saniyede bir metrikleri konsola yazdır
+        const now = Date.now();
+        const elapsed = now - this.lastMetricTime;
+        if (elapsed >= 5000) {
+          const logsPerSec = (this.processedInWindow / elapsed) * 1000;
+          const avgLatency = this.batchesInWindow > 0 ? (this.totalLatencyMs / this.batchesInWindow) : 0;
+          const ramMb = process.memoryUsage().heapUsed / 1024 / 1024;
+          
+          console.log(`[Performance Metrics] Total Processed: ${this.totalProcessed} logs | Speed: ${logsPerSec.toFixed(2)} logs/sec | Avg Batch Latency: ${avgLatency.toFixed(2)}ms | RAM Heap: ${ramMb.toFixed(2)} MB | Queue Size: ${this.queue.length}`);
+          
+          // Pencere metriklerini sıfırla
+          this.processedInWindow = 0;
+          this.totalLatencyMs = 0;
+          this.batchesInWindow = 0;
+          this.lastMetricTime = now;
+        }
 
         // Low Watermark altına inilirse soketi yeniden başlat (Backpressure deaktif)
         if (this.isPaused && this.queue.length <= this.LOW_WATERMARK) {
