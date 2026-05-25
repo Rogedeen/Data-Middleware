@@ -32,80 +32,139 @@ export function generateValidTCKN(): string {
 }
 
 /**
- * Borsa işlemlerine yönelik gerçekçi log mesajı ve detay şablonları üretir.
+ * Log Senaryosu Arayüzü
  */
-function getRandomLogContent(): { message: string; details: string } {
-  const symbols = ['THYAO', 'EREGL', 'TUPRS', 'ASELS', 'GARAN', 'BTCUSD', 'ETHUSD'];
+interface LogScenario {
+  level: LogLevel;
+  message: string;
+  details: Record<string, any>;
+}
+
+/**
+ * Borsa işlemlerine yönelik gerçekçi, seviyesine uygun log senaryosu üretir.
+ */
+function generateLogScenario(): LogScenario {
+  const symbols = ['THYAO', 'EREGL', 'TUPRS', 'ASELS', 'GARAN'];
   const sides = ['BUY', 'SELL'];
   const symbol = faker.helpers.arrayElement(symbols);
   const side = faker.helpers.arrayElement(sides);
-  const quantity = faker.number.int({ min: 10, max: 10000 });
+  const quantity = faker.number.int({ min: 10, max: 1000 });
   const price = parseFloat(faker.finance.amount({ min: 10, max: 500, dec: 2 }));
   const amount = parseFloat((quantity * price).toFixed(2));
   const ip = faker.internet.ipv4();
   const userAgent = faker.internet.userAgent();
 
-  const templates = [
+  const scenarios: LogScenario[] = [
+    // --- INFO Senaryoları (Başarılı İşlemler ve Normal Akış) ---
     {
+      level: LogLevel.INFO,
+      message: "User Session Started - Login Success",
+      details: { action: "LOGIN", status: "SUCCESS", ip, userAgent }
+    },
+    {
+      level: LogLevel.INFO,
+      message: "User Session Termination - Logout Request",
+      details: { action: "LOGOUT", ip, userAgent }
+    },
+    {
+      level: LogLevel.INFO,
       message: `Limit Order Placed - Symbol: ${symbol}, Side: ${side}`,
-      details: { symbol, side, quantity, price, amount, ip, userAgent }
+      details: { symbol, side, quantity, price, amount, ip }
     },
     {
-      message: `Market Order Executed Successfully - Symbol: ${symbol}, Side: ${side}`,
-      details: { symbol, side, quantity, price, amount, ip, userAgent, executionId: faker.string.uuid() }
+      level: LogLevel.INFO,
+      message: `Market Order Executed Successfully - Symbol: ${symbol}`,
+      details: { symbol, side, quantity, price, amount, executionId: faker.string.uuid() }
     },
     {
-      message: `Limit Order Execution Failed - Insufficient Margin`,
-      details: { symbol, side, quantity, price, amount, ip, userAgent, errorCode: 'ERR_MARGIN_LACK' }
-    },
-    {
+      level: LogLevel.INFO,
       message: `Deposit Funds Succeeded - Amount: $${amount}`,
-      details: { type: 'DEPOSIT', amount, ip, userAgent, referenceNo: faker.string.alphanumeric(12).toUpperCase() }
+      details: { type: "DEPOSIT", amount, ip, referenceNo: faker.string.alphanumeric(12).toUpperCase() }
+    },
+
+    // --- WARNING Senaryoları (Hafif Anomaliler, Sistem Çalışmasını Durdurmayan Durumlar) ---
+    {
+      level: LogLevel.WARNING,
+      message: "User Session Warning - Login Failed (Invalid Credentials)",
+      details: { action: "LOGIN", status: "FAILED", reason: "INVALID_CREDENTIALS", attemptCount: faker.number.int({ min: 1, max: 3 }), ip }
     },
     {
-      message: `Withdraw Funds Requested - Amount: $${amount}`,
-      details: { type: 'WITHDRAW', amount, ip, userAgent, referenceNo: faker.string.alphanumeric(12).toUpperCase() }
+      level: LogLevel.WARNING,
+      message: `Limit Order Cancelled by User - Symbol: ${symbol}`,
+      details: { orderId: faker.string.uuid(), symbol, reason: "USER_REQUEST_CANCEL" }
     },
     {
-      message: `User Session Started - Login Success`,
-      details: { action: 'LOGIN', status: 'SUCCESS', ip, userAgent }
+      level: LogLevel.WARNING,
+      message: "API Rate Limit Threshold Approaching - 80% Used",
+      details: { clientIp: ip, remainingRequests: faker.number.int({ min: 10, max: 50 }), limitWindowSec: 60 }
+    },
+
+    // --- ERROR Senaryoları (Başarısız İşlemler, Kullanıcı/Sistem Hataları) ---
+    {
+      level: LogLevel.ERROR,
+      message: "Limit Order Execution Failed - Insufficient Margin",
+      details: { errorCode: "ERR_MARGIN_LACK", requiredMargin: amount, availableMargin: parseFloat((amount * 0.4).toFixed(2)), symbol }
     },
     {
-      message: `User Session Termination - Logout Request`,
-      details: { action: 'LOGOUT', ip, userAgent }
+      level: LogLevel.ERROR,
+      message: "Withdraw Funds Failed - Insufficient Balance",
+      details: { errorCode: "ERR_BALANCE_LACK", requestedAmount: amount, availableBalance: parseFloat((amount * 0.2).toFixed(2)) }
+    },
+    {
+      level: LogLevel.ERROR,
+      message: "Database Read Timeout - Transaction Rollback",
+      details: { errorCode: "ERR_DB_TIMEOUT", queryType: "SELECT_USER_PORTFOLIO", durationMs: faker.number.int({ min: 5000, max: 8000 }), retryCount: 3 }
+    },
+
+    // --- CRITICAL Senaryoları (Güvenlik Alarmları, Kritik Sistem Hataları) ---
+    {
+      level: LogLevel.CRITICAL,
+      message: "Security Alert - Multiple Failed Logins (Brute-Force Threat Detected)",
+      details: { alarmId: "SEC_ALARM_01", attackerIp: ip, totalAttempts: faker.number.int({ min: 5, max: 15 }), targetAccount: faker.internet.email() }
+    },
+    {
+      level: LogLevel.CRITICAL,
+      message: "API Connection Refused - Exchange Broker API Offline",
+      details: { alarmId: "SYS_ALARM_02", brokerEndpoint: "https://api.borsainternational.com/v1/trade", responseCode: 503, reason: "Service Unavailable" }
+    },
+    {
+      level: LogLevel.CRITICAL,
+      message: "System Resource Alert - Node RAM Out of Memory",
+      details: { alarmId: "SYS_ALARM_03", heapUsedMb: faker.number.int({ min: 1900, max: 2048 }), heapTotalMb: 2048, percentage: "95%" }
     }
   ];
 
-  const selected = faker.helpers.arrayElement(templates);
-  return {
-    message: selected.message,
-    details: JSON.stringify(selected.details)
-  };
+  // Ağırlıklı rastgele seçim: %70 INFO, %15 WARNING, %10 ERROR, %5 CRITICAL
+  const roll = Math.random() * 100;
+  let targetLevel: LogLevel;
+  if (roll < 70) {
+    targetLevel = LogLevel.INFO;
+  } else if (roll < 85) {
+    targetLevel = LogLevel.WARNING;
+  } else if (roll < 95) {
+    targetLevel = LogLevel.ERROR;
+  } else {
+    targetLevel = LogLevel.CRITICAL;
+  }
+
+  const matching = scenarios.filter(s => s.level === targetLevel);
+  return faker.helpers.arrayElement(matching);
 }
 
 /**
  * Tekil ham log (IRawLogData) oluşturur.
  */
 export function generateRawLog(): IRawLogData {
-  // Log seviyeleri için ağırlıklı rastgele dağılım
-  // %70 INFO, %15 WARNING, %10 ERROR, %5 CRITICAL
-  const levels = [
-    ...Array(70).fill(LogLevel.INFO),
-    ...Array(15).fill(LogLevel.WARNING),
-    ...Array(10).fill(LogLevel.ERROR),
-    ...Array(5).fill(LogLevel.CRITICAL)
-  ];
-  const level = faker.helpers.arrayElement(levels);
-  const { message, details } = getRandomLogContent();
+  const scenario = generateLogScenario();
 
   return {
     timestamp: new Date().toISOString(),
-    level,
+    level: scenario.level,
     fullName: faker.person.fullName(),
     tcNo: generateValidTCKN(),
     creditCard: faker.finance.creditCardNumber('####-####-####-####'),
     email: faker.internet.email(),
-    message,
-    details
+    message: scenario.message,
+    details: JSON.stringify(scenario.details)
   };
 }
