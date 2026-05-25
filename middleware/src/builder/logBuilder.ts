@@ -29,6 +29,9 @@ export class LogBuilder implements ILogBuilder {
   }
 
   public build(): IProcessedLogData {
+    if (!this.log) {
+      throw new Error('[LogBuilder] build() called before reset(). You must call reset(rawLog) first.');
+    }
     if (
       !this.log.timestamp ||
       !this.log.level ||

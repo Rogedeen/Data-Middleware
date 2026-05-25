@@ -53,7 +53,8 @@ export class MaskProcessor extends LogProcessor<IRawLogData, IRawLogData> {
 
   /**
    * E-posta adresini, alan adını (domain) koruyacak şekilde maskeler.
-   * örn: john.doe@example.com -> j***.d**e@example.com
+   * Yalnızca ilk karakter açık bırakılır, geri kalan local kısım yıldızlanır.
+   * örn: johndoe@example.com -> j******@example.com
    */
   public maskEmail(email: string): string {
     const trimmed = email.trim();

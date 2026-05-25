@@ -6,6 +6,20 @@ export class HtmlStrategy implements IFormatStrategy {
     return OutputFormat.HTML;
   }
 
+  /**
+   * HTML özel karakterlerini güvenli hale getirir (XSS koruması).
+   * Log alanları kullanıcı/sistem kaynaklı veri içerebileceğinden
+   * doğrudan HTML'e gömülmeden önce bu fonksiyondan geçirilmelidir.
+   */
+  private escapeHtml(value: string): string {
+    return String(value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
   public format(logs: IProcessedLogData[]): string {
     let html = `<!DOCTYPE html>
 <html>
@@ -51,19 +65,19 @@ export class HtmlStrategy implements IFormatStrategy {
     for (const log of logs) {
       const badge = log.level === 'CRITICAL' ? 'badge-critical' : 'badge-error';
       const rowClass = log.level === 'CRITICAL' ? 'class="critical-row"' : '';
-      
+
       html += `
       <tr ${rowClass}>
-        <td>${log.timestamp}</td>
-        <td><span class="badge ${badge}">${log.level}</span></td>
-        <td>${log.fullName}</td>
-        <td><code>${log.tcNo}</code></td>
-        <td><code>${log.creditCard}</code></td>
-        <td>${log.email}</td>
-        <td>${log.message}</td>
-        <td>${log.senderId || 'N/A'}</td>
-        <td><code>${log.transactionNo || 'N/A'}</code></td>
-        <td><code style="font-size: 11px; white-space: pre-wrap; word-break: break-all;">${log.debug}</code></td>
+        <td>${this.escapeHtml(log.timestamp)}</td>
+        <td><span class="badge ${badge}">${this.escapeHtml(log.level)}</span></td>
+        <td>${this.escapeHtml(log.fullName)}</td>
+        <td><code>${this.escapeHtml(log.tcNo)}</code></td>
+        <td><code>${this.escapeHtml(log.creditCard)}</code></td>
+        <td>${this.escapeHtml(log.email)}</td>
+        <td>${this.escapeHtml(log.message)}</td>
+        <td>${this.escapeHtml(log.senderId || 'N/A')}</td>
+        <td><code>${this.escapeHtml(log.transactionNo || 'N/A')}</code></td>
+        <td><code style="font-size: 11px; white-space: pre-wrap; word-break: break-all;">${this.escapeHtml(log.debug)}</code></td>
       </tr>`;
     }
 
