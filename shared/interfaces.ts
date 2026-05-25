@@ -64,12 +64,6 @@ export interface ILogBuilder {
   setTransactionNo(transactionNo: string): ILogBuilder;
 
   /**
-   * Log seviyesine göre kritiklik durumunu belirler.
-   * @param level Log seviyesi
-   */
-  setIsCritical(level: LogLevel): ILogBuilder;
-
-  /**
    * Son halini almış IProcessedLogData nesnesini döner.
    */
   build(): IProcessedLogData;

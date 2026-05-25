@@ -22,7 +22,6 @@ export class EnrichProcessor extends LogProcessor<IRawLogData, IProcessedLogData
         .reset(log)
         .setSenderId(this.senderId)
         .setTransactionNo(transactionNo)
-        .setIsCritical(log.level)
         .build();
     });
 

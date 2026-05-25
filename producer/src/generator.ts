@@ -174,6 +174,6 @@ export function generateRawLog(): IRawLogData {
     creditCard: faker.finance.creditCardNumber('####-####-####-####'),
     email: faker.internet.email(),
     message: scenario.message,
-    details: JSON.stringify(scenario.details)
+    debug: JSON.stringify(scenario.details)
   };
 }

@@ -136,10 +136,10 @@ export class TCPConnectionHandler {
         this.totalLatencyMs += latencyMs;
         this.batchesInWindow += 1;
 
-        // Her 5 saniyede bir metrikleri konsola yazdır
+        // Her 1 saniyede bir metrikleri konsola yazdır
         const now = Date.now();
         const elapsed = now - this.lastMetricTime;
-        if (elapsed >= 5000) {
+        if (elapsed >= 1000) {
           const logsPerSec = (this.processedInWindow / elapsed) * 1000;
           const avgLatency = this.batchesInWindow > 0 ? (this.totalLatencyMs / this.batchesInWindow) : 0;
           const ramMb = process.memoryUsage().heapUsed / 1024 / 1024;
@@ -158,6 +158,15 @@ export class TCPConnectionHandler {
           this.socket.resume();
           this.isPaused = false;
           console.log(`[Backpressure] Log queue size (${this.queue.length}) <= Low Watermark (${this.LOW_WATERMARK}). Resuming TCP socket stream.`);
+        }
+      }
+
+      if (this.queue.length === 0 && this.totalProcessed > 0) {
+        const ramMb = process.memoryUsage().heapUsed / 1024 / 1024;
+        if (this.socket.destroyed) {
+          console.log(`[Performance Metrics] SESSION COMPLETED | Total Logs Processed: ${this.totalProcessed} | Final RAM Heap: ${ramMb.toFixed(2)} MB`);
+        } else {
+          console.log(`[Performance Metrics] Queue Drained | Total Processed: ${this.totalProcessed} logs | RAM Heap: ${ramMb.toFixed(2)} MB`);
         }
       }
     } catch (error: any) {
@@ -187,7 +196,7 @@ export class TCPConnectionHandler {
       const secOutput = secFormatter.format(logs);
 
       if (!fileExists) {
-        const headers = ['Timestamp', 'Level', 'FullName', 'TCNo', 'CreditCard', 'Email', 'Message', 'SenderId', 'TransactionNo', 'Details'].join(';');
+        const headers = ['Timestamp', 'Level', 'FullName', 'TCNo', 'CreditCard', 'Email', 'Message', 'SenderId', 'TransactionNo', 'Debug'].join(';');
         fs.writeFileSync(csvPath, headers + '\n' + secOutput + '\n', 'utf-8');
       } else {
         fs.appendFileSync(csvPath, secOutput + '\n', 'utf-8');

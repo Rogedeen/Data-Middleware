@@ -39,7 +39,7 @@ export interface IRawLogData {
   creditCard: string;
   email: string;
   message: string;
-  details: string;
+  debug: string;
 }
 
 /**
@@ -53,9 +53,7 @@ export interface IProcessedLogData {
   creditCard: string;       // Maskelenmiş
   email: string;            // Maskelenmiş
   message: string;
-  details: string;
-  // Zenginleştirme (Builder) ile eklenen alanlar
   senderId?: string;
   transactionNo?: string;
-  isCritical?: boolean;
+  debug: string;
 }

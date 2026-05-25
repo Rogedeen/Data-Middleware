@@ -49,7 +49,7 @@ services:
             mv /output/cybersec.2.csv /output/cybersec.3.csv 2>/dev/null;
             mv /output/cybersec.1.csv /output/cybersec.2.csv 2>/dev/null;
             if mv /output/cybersec.csv /output/cybersec.1.csv 2>/dev/null; then
-              echo 'Timestamp;Level;FullName;TCNo;CreditCard;Email;Message;SenderId;TransactionNo;Details' > /output/cybersec.csv;
+              echo 'Timestamp;Level;FullName;TCNo;CreditCard;Email;Message;SenderId;TransactionNo;Debug' > /output/cybersec.csv;
               echo 'Log rotation successful.';
             else
               echo 'Failed to rotate cybersec.csv. File might be locked by another process (e.g. Excel). Will retry...';

@@ -1,5 +1,5 @@
 import { ILogBuilder } from '../../../shared/interfaces';
-import { IRawLogData, IProcessedLogData, LogLevel } from '../../../shared/types';
+import { IRawLogData, IProcessedLogData } from '../../../shared/types';
 
 export class LogBuilder implements ILogBuilder {
   private log!: Partial<IProcessedLogData>;
@@ -13,7 +13,7 @@ export class LogBuilder implements ILogBuilder {
       creditCard: rawLog.creditCard,
       email: rawLog.email,
       message: rawLog.message,
-      details: rawLog.details,
+      debug: rawLog.debug,
     };
     return this;
   }
@@ -28,12 +28,6 @@ export class LogBuilder implements ILogBuilder {
     return this;
   }
 
-  public setIsCritical(level: LogLevel): ILogBuilder {
-    // ERROR ve CRITICAL log seviyeleri 'critical' olarak işaretlenir
-    this.log.isCritical = level === LogLevel.CRITICAL || level === LogLevel.ERROR;
-    return this;
-  }
-
   public build(): IProcessedLogData {
     if (
       !this.log.timestamp ||
@@ -41,11 +35,23 @@ export class LogBuilder implements ILogBuilder {
       !this.log.fullName ||
       !this.log.tcNo ||
       !this.log.creditCard ||
-      !this.log.email
+      !this.log.email ||
+      !this.log.message
     ) {
       throw new Error('[LogBuilder] Validation error: Missing required base fields for logging.');
     }
     
-    return this.log as IProcessedLogData;
+    return {
+      timestamp: this.log.timestamp,
+      level: this.log.level,
+      fullName: this.log.fullName,
+      tcNo: this.log.tcNo,
+      creditCard: this.log.creditCard,
+      email: this.log.email,
+      message: this.log.message,
+      senderId: this.log.senderId,
+      transactionNo: this.log.transactionNo,
+      debug: this.log.debug || ''
+    };
   }
 }

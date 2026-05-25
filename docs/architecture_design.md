@@ -95,7 +95,7 @@ sequenceDiagram
         CoR->>CoR: TC No, CC No, E-posta maskele
         Note over CoR: Zincir Halka 3: Zenginleştirme
         CoR->>Builder: reset(rawLog)
-        Builder->>Builder: setSenderId() / setTransactionNo() / setIsCritical()
+        Builder->>Builder: setSenderId() / setTransactionNo()
         Builder-->>CoR: build() -> IProcessedLogData
     end
     
@@ -127,7 +127,7 @@ Proje anayasası olan `rules.md` gereğince sistemimizde aşağıdaki 5 tasarım
 
 ### 3. Builder Pattern (Yaratımsal)
 * **Sınıf:** `LogBuilder` (İmplementasyon: `ILogBuilder`)
-* **Amaç:** Log nesnesinin zenginleştirilmesi (enrichment) esnasında karmaşık log alanlarını (`senderId`, `transactionNo`, `isCritical`) adım adım ve güvenli bir şekilde inşa etmek.
+* **Amaç:** Log nesnesinin zenginleştirilmesi (enrichment) esnasında karmaşık log alanlarını (`senderId`, `transactionNo`) adım adım ve güvenli bir şekilde inşa etmek.
 
 ### 4. Strategy Pattern (Davranışsal)
 * **Sınıflar:** `HtmlStrategy`, `CsvStrategy`, `JsonStrategy` (İmplementasyon: `IFormatStrategy`)

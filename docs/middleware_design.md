@@ -405,7 +405,6 @@ export class EnrichProcessor extends LogProcessor<IRawLogData, IProcessedLogData
         .reset(log)
         .setSenderId(this.senderId)
         .setTransactionNo(transactionNo)
-        .setIsCritical(log.level)
         .build();
     });
 
@@ -451,10 +450,7 @@ export class LogBuilder implements ILogBuilder {
     return this;
   }
 
-  public setIsCritical(level: LogLevel): ILogBuilder {
-    this.log.isCritical = level === LogLevel.CRITICAL || level === LogLevel.ERROR;
-    return this;
-  }
+
 
   public build(): IProcessedLogData {
     if (
@@ -514,6 +510,7 @@ export class HtmlStrategy implements IFormatStrategy {
     .badge { display: inline-block; padding: 4px 8px; font-size: 11px; font-weight: bold; border-radius: 9999px; text-transform: uppercase; }
     .badge-critical { background-color: #ef4444; color: white; }
     .badge-error { background-color: #f59e0b; color: white; }
+    .badge-normal { background-color: #10b981; color: white; }
     .critical-row { border-left: 5px solid #ef4444; background-color: #fef2f2 !important; }
   </style>
 </head>
@@ -525,20 +522,21 @@ export class HtmlStrategy implements IFormatStrategy {
       <tr>
         <th>Timestamp</th>
         <th>Level</th>
-        <th>User FullName</th>
+        <th>Full Name</th>
         <th>TC No</th>
         <th>Credit Card</th>
         <th>Email</th>
         <th>Message</th>
-        <th>Sender</th>
+        <th>Sender ID</th>
         <th>Transaction No</th>
+        <th>Debug</th>
       </tr>
     </thead>
     <tbody>`;
 
     for (const log of logs) {
       const badge = log.level === 'CRITICAL' ? 'badge-critical' : 'badge-error';
-      const rowClass = log.isCritical ? 'class="critical-row"' : '';
+      const rowClass = log.level === 'CRITICAL' ? 'class="critical-row"' : '';
       
       html += `
       <tr \${rowClass}>
@@ -551,6 +549,7 @@ export class HtmlStrategy implements IFormatStrategy {
         <td>\${log.message}</td>
         <td>\${log.senderId || 'N/A'}</td>
         <td><code>\${log.transactionNo || 'N/A'}</code></td>
+        <td><code style="font-size: 11px; white-space: pre-wrap; word-break: break-all;">\${log.debug}</code></td>
       </tr>`;
     }
 
@@ -588,7 +587,7 @@ export class CsvStrategy implements IFormatStrategy {
         this.escapeCsv(log.message),
         log.senderId || '',
         log.transactionNo || '',
-        this.escapeCsv(log.details),
+        this.escapeCsv(log.debug),
       ];
       csvRows.push(row.join(';'));
     }
@@ -598,7 +597,7 @@ export class CsvStrategy implements IFormatStrategy {
 
   private escapeCsv(field: string): string {
     const stringified = String(field);
-    if (stringified.includes(',') || stringified.includes('"') || stringified.includes('\n')) {
+    if (stringified.includes(';') || stringified.includes('"') || stringified.includes('\n')) {
       return `"\${stringified.replace(/"/g, '""')}"`;
     }
     return stringified;
@@ -715,7 +714,6 @@ classDiagram
         +reset(rawLog: IRawLogData) ILogBuilder
         +setSenderId(senderId: string) ILogBuilder
         +setTransactionNo(transactionNo: string) ILogBuilder
-        +setIsCritical(level: LogLevel) ILogBuilder
         +build() IProcessedLogData
     }
     class LogBuilder {
@@ -723,7 +721,6 @@ classDiagram
         +reset(rawLog: IRawLogData) ILogBuilder
         +setSenderId(senderId: string) ILogBuilder
         +setTransactionNo(transactionNo: string) ILogBuilder
-        +setIsCritical(level: LogLevel) ILogBuilder
         +build() IProcessedLogData
     }
     ILogBuilder <|.. LogBuilder
