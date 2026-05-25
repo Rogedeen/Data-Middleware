@@ -36,8 +36,13 @@ export class HtmlStrategy implements IFormatStrategy {
       <tr>
         <th>Timestamp</th>
         <th>Level</th>
+        <th>Full Name</th>
+        <th>TC No</th>
+        <th>Credit Card</th>
+        <th>Email</th>
         <th>Message</th>
         <th>Sender ID</th>
+        <th>Transaction No</th>
         <th>Criticality</th>
       </tr>
     </thead>
@@ -54,8 +59,13 @@ export class HtmlStrategy implements IFormatStrategy {
       <tr ${rowClass}>
         <td>${log.timestamp}</td>
         <td><span class="badge ${badge}">${log.level}</span></td>
+        <td>${log.fullName}</td>
+        <td><code>${log.tcNo}</code></td>
+        <td><code>${log.creditCard}</code></td>
+        <td>${log.email}</td>
         <td>${log.message}</td>
         <td>${log.senderId || 'N/A'}</td>
+        <td><code>${log.transactionNo || 'N/A'}</code></td>
         <td>${criticalityBadge}</td>
       </tr>`;
     }
