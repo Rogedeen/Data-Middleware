@@ -2,7 +2,7 @@
 
 **Yazılım Mühendisliği Dönem Sonu Projesi**
 
-Bir borsa kuruluşu için geliştirilmiş gerçek zamanlı log ara katmanı (middleware). Saniyede binlerce log üreten bir simülatörden TCP soketi üzerinden veri alır; kişisel verileri maskeler, logları zenginleştirir ve farklı rollere (System Admin, CyberSec, Web Dev) göre HTML, CSV ve JSON formatlarında diske yazar.
+Bir borsa kuruluşu için geliştirilmiş gerçek zamanlı log ara katmanı (middleware). Saniyede binlerce log üreten bir simülatörden TCP soketi üzerinden veri alır; kişisel verileri maskeler, logları zenginleştirir ve farklı rollere (System Admin, CyberSec, Web Dev) göre HTML, CSV ve JSON formatlarında diske yazar. Google Antigravity üzerinden multi-agent AI ile geliştirilmiştir.
 
 ---
 
